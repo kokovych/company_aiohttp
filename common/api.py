@@ -1,8 +1,9 @@
 from aiohttp import web
 import db
-from sqlalchemy.sql import select
+from db import User
+from sqlalchemy.sql import select, insert
 from sqlalchemy import desc
-
+from sqlalchemy.orm import sessionmaker
 LIMIT_USERS_PER_REQUEST = 10
 
 
@@ -24,5 +25,23 @@ async def users_list(request):
     return web.json_response(data)
 
 async def create_user(request):
-    data = {'some': 'data'}
-    return web.json_response(data)
+    resp = {'some': 'data'}
+    data = await request.json()
+    print(data)
+
+    username = data.get('')
+    try:
+        instance = db.User(**data)
+        print(instance)
+
+        # session = sessionmaker(bind=request.app['db'])()
+        # print(session)
+        # session.add(instance)
+        # session.commit()
+        async with request.app['db'].acquire() as conn:
+            cursor = await conn.execute(insert(db.User).values(data))
+
+    except TypeError as e:
+        err = str(e)
+        return web.json_response(err, status=400)
+    return web.json_response(resp)
