@@ -4,7 +4,13 @@ from db import User
 from sqlalchemy.sql import select, insert
 from sqlalchemy import desc
 from sqlalchemy.orm import sessionmaker
+from psycopg2 import errors
+
 LIMIT_USERS_PER_REQUEST = 10
+
+ERROR_RESPONSE = {
+    'error': None
+}
 
 
 async def index(request):
@@ -27,21 +33,16 @@ async def users_list(request):
 async def create_user(request):
     resp = {'some': 'data'}
     data = await request.json()
-    print(data)
-
-    username = data.get('')
     try:
-        instance = db.User(**data)
-        print(instance)
-
-        # session = sessionmaker(bind=request.app['db'])()
-        # print(session)
-        # session.add(instance)
-        # session.commit()
+        db.User(**data)
         async with request.app['db'].acquire() as conn:
-            cursor = await conn.execute(insert(db.User).values(data))
+            await conn.execute(insert(db.User).values(data))
 
-    except TypeError as e:
-        err = str(e)
+    except errors.UniqueViolation as err:
+        ERROR_RESPONSE['error'] = str(err)
+        return web.json_response(ERROR_RESPONSE, status=400)
+
+    except TypeError as err:
+        ERROR_RESPONSE['error'] = str(err)
         return web.json_response(err, status=400)
     return web.json_response(resp)
