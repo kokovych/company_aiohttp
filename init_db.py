@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, MetaData, Table
 
 from common.settings import config
-from common.db import Base
+from common.model import Base
 
 
 DSN = "postgresql://{user}:{password}@{host}:{port}/{database}"
