@@ -2,4 +2,4 @@ aiohttp
 pyyaml
 aiopg[sa]
 aiohttp_jinja2
-marshmallow==2.20.1
+flake8

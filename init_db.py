@@ -1,10 +1,11 @@
-from sqlalchemy import create_engine, MetaData, Table
+from sqlalchemy import create_engine
 
 from common.settings import config
 from common.model import Base
 
 
 DSN = "postgresql://{user}:{password}@{host}:{port}/{database}"
+
 
 def create_tables(engine):
     meta = Base.metadata
