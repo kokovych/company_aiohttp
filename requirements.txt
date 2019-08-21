@@ -3,3 +3,5 @@ pyyaml
 aiopg[sa]
 aiohttp_jinja2
 flake8
+pytest
+pytest-aiohttp
