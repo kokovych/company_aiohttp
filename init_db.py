@@ -12,6 +12,11 @@ def create_tables(engine):
     meta.create_all(bind=engine)
 
 
+def drop_tables(engine):
+    meta = Base.metadata
+    meta.drop_all(bind=engine)
+
+
 if __name__ == '__main__':
     db_url = DSN.format(**config['postgres'])
     engine = create_engine(db_url)

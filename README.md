@@ -36,3 +36,14 @@ For start project:
 ```
 (venv)$ python common/main.py
 ```
+
+##### Run tests
+
+```
+(venv)$ pytest -vs
+```
+
+##### Check code style
+```
+(venv)$ flake8
+```

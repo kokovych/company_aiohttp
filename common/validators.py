@@ -2,21 +2,27 @@ from db import get_user_by_email
 from model import get_correct_fields
 
 
+EMAIL_REQUIRED = 'email is required'
+USERNAME_REQUIRED = 'username is required'
+PASSWORD_REQUIRED = 'password is required'
+NOT_UNIQUE_USER = 'not unique email'
+
+
 async def validate_registration(conn, data):
     username = data['username']
     password = data['password']
     email = data['email']
 
     if not username:
-        return 'username is required'
-    if not password:
-        return 'password is required'
+        return USERNAME_REQUIRED
     if not email:
-        return 'email is required'
+        return EMAIL_REQUIRED
+    if not password:
+        return PASSWORD_REQUIRED
 
     user = await get_user_by_email(conn, email)
     if user:
-        return 'not unique email'
+        return NOT_UNIQUE_USER
 
 
 def clean_create_user_data(data):

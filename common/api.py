@@ -5,11 +5,16 @@ from sqlalchemy import desc
 from model import User
 from validators import clean_create_user_data, validate_registration
 
-LIMIT_USERS_PER_REQUEST = 10
 
-ERROR_RESPONSE = {
-    'error': None
+LIMIT_USERS_PER_REQUEST = 10
+BAD_DATA = 'bad data'
+CORRECT_RESPONSE = {
+    'data': None
 }
+ERROR_RESPONSE = {
+    'error': BAD_DATA
+}
+USER_CREATED = 'User was successfully created!'
 
 
 async def index(request):
@@ -31,19 +36,21 @@ async def users_list(request):
     return web.json_response(data)
 
 
-async def create_user(request):
-    resp = {'some': 'data'}
-    user_data = await request.json()
-    user_data = clean_create_user_data(user_data)
-    try:
-        async with request.app['db'].acquire() as conn:
-            error = await validate_registration(conn, user_data)
-            if error:
-                ERROR_RESPONSE['error'] = error
-                return web.json_response(ERROR_RESPONSE, status=400)
-            await conn.execute(insert(User).values(user_data))
+async def create_user(request, *args, **kwargs):
+    if request.body_exists:
+        user_data = await request.json()
+        user_data = clean_create_user_data(user_data)
+        try:
+            async with request.app['db'].acquire() as conn:
+                error = await validate_registration(conn, user_data)
+                if error:
+                    ERROR_RESPONSE['error'] = error
+                    return web.json_response(ERROR_RESPONSE, status=400)
+                await conn.execute(insert(User).values(user_data))
 
-    except TypeError as err:
-        ERROR_RESPONSE['error'] = str(err)
-        return web.json_response(err, status=400)
-    return web.json_response(resp)
+        except TypeError as err:
+            ERROR_RESPONSE['error'] = str(err)
+            return web.json_response(err, status=400)
+        CORRECT_RESPONSE['data'] = USER_CREATED
+        return web.json_response(CORRECT_RESPONSE, status=201)
+    return web.json_response(ERROR_RESPONSE, status=400)
