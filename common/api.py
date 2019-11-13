@@ -36,6 +36,11 @@ async def users_list(request):
     return web.json_response(data)
 
 
+# todo: add hash of password(do not save password in DB)
+# from passlib.hash import sha256_crypt
+# hash = sha256_crypt.hash("password")
+# verify:
+# sha256_crypt.verify('password', hash)
 async def create_user(request, *args, **kwargs):
     if request.body_exists:
         user_data = await request.json()
